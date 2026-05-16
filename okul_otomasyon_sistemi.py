@@ -50,7 +50,10 @@ def ogrenci_goruntule():
         else:
             tc=bilgiler[2]
             if goruntulenecek_tc==tc:
-                print(f"\nİsim: {bilgiler[0]} Soyisim: {bilgiler[1]}\nTc: {bilgiler[2]}\nSınıf: {bilgiler[3]}\nBölüm: {bilgiler[4]}")
+                if len(bilgiler)==7:
+                    print(f"\nİsim: {bilgiler[0]} Soyisim: {bilgiler[1]}\nTc: {bilgiler[2]}\nSınıf: {bilgiler[3]}\nBölüm: {bilgiler[4]}\nNot1: {bilgiler[5]} Not2: {bilgiler[6]}")
+                else:
+                    print(f"\nİsim: {bilgiler[0]} Soyisim: {bilgiler[1]}\nTc: {bilgiler[2]}\nSınıf: {bilgiler[3]}\nBölüm: {bilgiler[4]}")
                 bulundu_mu=True
                 break
     if bulundu_mu==False:
@@ -149,6 +152,35 @@ def calisan_sil():
             else:
                 print(f"{silinen_isim} {silinen_soyisim} adlı çalışanın kaydı silindi.")
 
+def not_gir():
+    not_tc=input("Notunu girmek istediğiniz öğrencinin tcsini giriniz: ")
+    with open("ogrenci_bilgileri.txt","r",encoding="utf-8") as dosya:
+        satirlar=dosya.readlines()
+    ogrenci_bulundu=False
+    hata_var=False
+    for satir in satirlar:
+        bilgiler=satir.strip().split(",")
+        if len(bilgiler)>=5:
+            karsilastirilacak_tc=bilgiler[2]
+            if karsilastirilacak_tc==not_tc:
+                 ogrenci_bulundu=True
+                 break
+        else:
+            if not_tc in satir:
+                hata_var=True
+                break
+    if hata_var==True:
+        print("HATA\nYöneticiye bildirin")
+    if ogrenci_bulundu==True:
+        not1=input(f"{bilgiler[0]} {bilgiler[1]} isimli öğrencinin vize notunu giriniz: ")
+        not2=input(f"{bilgiler[0]} {bilgiler[1]} isimli öğrencinin final notunu giriniz: ")
+        with open("ogrenci_bilgileri.txt","w",encoding="utf-8") as dosya:
+            for satir in satirlar:
+                if not_tc in satir:
+                    dosya.write(f"{bilgiler[0]},{bilgiler[1]},{bilgiler[2]},{bilgiler[3]},{bilgiler[4]},{not1},{not2}\n")
+                    print(f"{bilgiler[0]} {bilgiler[1]} isimli öğrencinin notları kaydedildi\nVize:{not1} Final:{not2}")
+                else:
+                    dosya.write(satir)
 
 print("-----HOŞ GELDİNİZ-----")
 kullanici_adi=input("Kullanıcı Adınızı Giriniz: ").lower()
@@ -241,10 +273,26 @@ if not(giris_yapildi):
     #OGRETMEN / OGRENCİ PANELİ
     if ogretmen_giris==True:
         print(f"Hoş geldiniz, {isim} {soyisim}")
-        #Ogretmen paneli buradan öğrenciye göre not ekleme ve görüntüleme kısımları olucak
+        ogretmen_secim=input("1-Öğrenci Görüntüle\n2-Öğrenci Not Gir\nSeçiminiz.: ")
+        if ogretmen_secim=="1":
+            ogrenci_goruntule()
+        if ogretmen_secim=="2":
+            not_gir()
+    
+    
     elif ogrenci_giris==True:
-        print(f"-----Öğrenci Bilgi Sistemi-----")
-        #ogrenci sayfası buradan bilgi görüntüleme fonksiyonu çalışacak not1 npt2 ve ort görülcek gecip kaldı durmu eklenebilir
+        with open("ogrenci_bilgileri.txt","r", encoding="utf-8") as dosya:
+            satirlar=dosya.readlines()
+            for satir in satirlar:
+                bilgiler=satir.strip().split(",")
+                if len(bilgiler)>5 and bilgiler[2]==ogrenci_tc:
+                    #GİRİŞ BASARILI
+                    print(f"Öğrenci adı soyadı: {bilgiler[0]} {bilgiler[1]}\nVize notu: {bilgiler[5]} Final Notu: {bilgiler[6]}")
+                elif len(bilgiler)==5 and bilgiler[2]==ogrenci_tc:
+                    print(f"\nİsim: {bilgiler[0]} Soyisim: {bilgiler[1]}\nTc: {bilgiler[2]}\nSınıf: {bilgiler[3]}\nBölüm: {bilgiler[4]}")
 
+            
     elif ogretmen_hata==True or ogrenci_hata==True:
         print("HATA\nYöneticiye ulaşın")
+if not(giris_yapildi) and (ogrenci_giris==False) and (ogretmen_giris==False):
+    print("Kullanıcı adı veya şifre hatalı")

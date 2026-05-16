@@ -1,2 +1,2 @@
-zeynep,tuncel,00000000001,1,YBS
-berfin,palas,00000000003,2,diş
+zeynep,tuncel,00000000001,1,YBS,76,83
+berfin,palas,00000000003,1,maliye,54,91

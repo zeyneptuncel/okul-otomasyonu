@@ -39,8 +39,8 @@ def ogrenci_goruntule():
         satirlar= dosya.readlines()
     bulundu_mu=False
     for satir in satirlar:
-        bilgiler=satir.split(",")
-        if not(len(bilgiler)>=4):
+        bilgiler=satir.strip().split(",")
+        if not(len(bilgiler)>=5):
             if goruntulenecek_tc in satir:
                 bulundu_mu=True
                 print("Öğrenci bulunamadı\nVeri dosyasında hata var kontrol edin.")
@@ -64,8 +64,8 @@ def ogrenci_sil():
         silindi_mi=False
         hata=False
         for satir in satirlar:
-            bilgiler=satir.split(",")
-            if not(len(bilgiler)>=4):
+            bilgiler=satir.strip().split(",")
+            if not(len(bilgiler)>=5):
                 if silinecek_tc in satir:
                     hata=True
                 else:
@@ -103,7 +103,7 @@ def calisan_goruntule():
         satirlar=dosya.readlines()
         bulundu_mu=False
         for satir in satirlar:
-            bilgiler=satir.split(",")
+            bilgiler=satir.strip().split(",")
             if not(len(bilgiler)==5):
                 if goruntulencek_tc in satir:
                     print(len(bilgiler))
@@ -118,6 +118,36 @@ def calisan_goruntule():
                     break
     if bulundu_mu==False:
         print("Bu tc ile çalışan bulunamamıştır")
+
+def calisan_sil():
+    silinecek_tc=input("Silmek istediğiniz çalışan tcsini giriniz: ")
+    with open("calisan_bilgileri.txt","r",encoding="utf-8") as dosya:
+        satirlar=dosya.readlines()
+    silindi_mi=False
+    hata_var_mi=False
+    with open("calisan_bilgileri.txt","w",encoding="utf-8") as dosya:
+        for satir in satirlar:
+            bilgiler=satir.strip().split(",")
+            if len(bilgiler)!=5:
+                if silinecek_tc in satir:
+                    silindi_mi=True
+                    hata_var_mi=True
+                else:
+                    dosya.write(satir)
+            else:
+                tc=bilgiler[2]
+                if silinecek_tc==tc:
+                    silindi_mi=True
+                    silinen_isim = bilgiler[0]
+                    silinen_soyisim=bilgiler[1]
+                         
+                else:
+                    dosya.write(satir)
+        if silindi_mi==True:
+            if hata_var_mi==True:
+                print("Veri hatası olan dosya silindi")
+            else:
+                print(f"{silinen_isim} {silinen_soyisim} adlı çalışanın kaydı silindi.")
 
 
 print("-----HOŞ GELDİNİZ-----")
@@ -162,15 +192,59 @@ if kullanici_adi=="admin" and sifre=="12345":
                 calisan_ekle()
             if secim=="2":
                 calisan_goruntule()
+            if secim=="3":
+                calisan_sil()
             if secim=="4":
                 break
-            
-             
+
+if not(giris_yapildi):
+    #OGRETMEN / OGRENCİ KONTROLU
+    ogretmen_giris=False
+    ogrenci_giris=False
+    ogretmen_hata=False
+    ogrenci_hata=False
+    
+    with open("calisan_bilgileri.txt","r",encoding="utf-8") as dosya:
+        satirlar = dosya.readlines()
+    for satir in satirlar:
+        bilgiler=satir.strip().split(",")
+        if len(bilgiler)==5:
+            if "öğretmen" in satir or "ogretmen" in satir:
+                isim=bilgiler[0]
+                soyisim=bilgiler[1]
+                tc=bilgiler[2]
+                ogretmen_sifre= (f"{bilgiler[0]}_{bilgiler[1]}")
+                if kullanici_adi==tc and sifre==ogretmen_sifre:
+                    ogretmen_giris=True
+                    break       
+        else:
+            if kullanici_adi in satir:
+                ogretmen_hata=True
 
 
+    with open("ogrenci_bilgileri.txt","r",encoding="utf-8") as dosya:
+        satirlar = dosya.readlines()
+    for satir in satirlar:
+        bilgiler=satir.strip().split(",")
+        if len(bilgiler)>=5:
+            ogrenci_isim=bilgiler[0]
+            ogrenci_soyisim=bilgiler[1]
+            ogrenci_tc=bilgiler[2]
+            ogrenci_sifre=(f"{ogrenci_isim}_{ogrenci_soyisim}")
+            if kullanici_adi==ogrenci_tc and sifre==ogrenci_sifre:
+                ogrenci_giris=True
+                break
+        else:
+            if kullanici_adi in satir:
+                ogrenci_hata=True
 
+    #OGRETMEN / OGRENCİ PANELİ
+    if ogretmen_giris==True:
+        print(f"Hoş geldiniz, {isim} {soyisim}")
+        #Ogretmen paneli buradan öğrenciye göre not ekleme ve görüntüleme kısımları olucak
+    elif ogrenci_giris==True:
+        print(f"-----Öğrenci Bilgi Sistemi-----")
+        #ogrenci sayfası buradan bilgi görüntüleme fonksiyonu çalışacak not1 npt2 ve ort görülcek gecip kaldı durmu eklenebilir
 
-
-            
-
-
+    elif ogretmen_hata==True or ogrenci_hata==True:
+        print("HATA\nYöneticiye ulaşın")

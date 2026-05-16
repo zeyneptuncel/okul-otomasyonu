@@ -1,1 +1,2 @@
-zeynep,tuncel,12345678910,1,YBS
+zeynep,tuncel,00000000001,1,YBS
+berfin,palas,00000000003,2,diş
